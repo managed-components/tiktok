@@ -8,7 +8,7 @@ const sendEvent = async (
   settings: ComponentSettings
 ) => {
   const tiktokEndpoint =
-    'https://business-api.tiktok.com/open_api/v1.2/pixel/track/'
+    'https://business-api.tiktok.com/open_api/v1.3/pixel/track/'
 
   const requestBody = {
     pixel_code: payload.properties.pixelCode || settings.pixelCode,
