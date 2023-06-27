@@ -73,9 +73,15 @@ export const getRequestBody = async (
         const data = encoder.encode(value.trim().toLowerCase())
         const digest = await crypto.subtle.digest('SHA-256', data)
         const hashArray = Array.from(new Uint8Array(digest))
-        value = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+        const hashedValue = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+        if (key === 'email' || key === 'phone_number') {
+            body.context.user[`sha256_${key}`] = hashedValue
+        } else {
+            body.context.user[key] = hashedValue
+        }
+      } else {
+          body.context.user[key] = value
       }
-      body.context.user[key] = value
       delete payload[key]
     }
   }
