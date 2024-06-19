@@ -27,26 +27,33 @@ const getBaseRequestBody = (
   const eventId =
     payload.event_id || String(Math.round(Math.random() * 100000000000000000))
 
+  // Events API 2.0
+  // https://business-api.tiktok.com/portal/docs?id=1771100865818625
+
   const body: { [k: string]: any } = {
-    event:
-      (eventType === 'pageview' ? 'Pageview' : payload.ev) ||
-      event.name ||
-      event.type,
-    event_id: eventId,
-    timestamp: new Date(client.timestamp! * 1000).toISOString(),
-    context: {
-      page: {
-        url: client.url.href,
+    data: [
+      {
+        event:
+          (eventType === 'pageview' ? 'Pageview' : payload.ev) ||
+          event.name ||
+          event.type,
+        event_time: new Date(client.timestamp! * 1000).toISOString(), // number. The time that the event took place. Use unix timestamp. Example: 1697783008.
+        event_id: eventId, // event_id. A unique ID for the event for deduplication. Example: "Z1A2R3A4Z5".
+        user: {
+          ...(!settings.hideClientIP && {
+            user_agent: client.userAgent, // string. Non-hashed user agent from the user’s device. Example: "Chrome/91.0.4472.124".
+            ip: client.ip, // string. Non-hashed public IP address of the browser.
+          }),
+        },
+        page: {
+          url: client.url.href, // string. The page URL where the event took place. Example: "http://demo.mywebsite.com/purchase"
+          referrer: client.url.referrer, // string. The URL of the referrer page. Example: "http://demo.mywebsite.com/home".
+        },
+        properties: {},
       },
-      ...(!settings.hideClientIP && {
-        user_agent: client.userAgent,
-        ip: client.ip,
-      }),
-      user: {},
-      ad: {},
-    },
-    properties: {},
+    ],
   }
+
   delete payload.ev
 
   return body
@@ -92,7 +99,7 @@ export const getRequestBody = async (
         const hashArray = Array.from(new Uint8Array(digest))
         value = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
       }
-      body.context.user[key] = value
+      body.data.user[key] = value
       delete payload[key]
     }
   }
@@ -104,14 +111,12 @@ export const getRequestBody = async (
   }
 
   const ttpFromCookie = event.client.get('_ttp')
-  if (!body.context.user.ttp && ttpFromCookie) {
-    body.context.user.ttp = ttpFromCookie
+  if (!body.data.user.ttp && ttpFromCookie) {
+    body.data.user.ttp = ttpFromCookie
   }
 
   if (ttclid) {
-    body.context.ad = {
-      callback: ttclid,
-    }
+    body.data.user = ttclid
   }
 
   return body
