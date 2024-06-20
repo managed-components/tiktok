@@ -99,6 +99,9 @@ export const getRequestBody = async (
         const hashArray = Array.from(new Uint8Array(digest))
         value = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
       }
+      if (key === 'phone_number') {
+        body.data.user.phone = value
+      }
       body.data.user[key] = value
       delete payload[key]
     }
