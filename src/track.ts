@@ -47,7 +47,7 @@ const getBaseRequestBody = (
         },
         page: {
           url: client.url.href, // string. The page URL where the event took place. Example: "http://demo.mywebsite.com/purchase"
-          referrer: client.url.referrer, // string. The URL of the referrer page. Example: "http://demo.mywebsite.com/home".
+          referrer: client.referer, // string. The URL of the referrer page. Example: "http://demo.mywebsite.com/home".
         },
         properties: {},
       },
