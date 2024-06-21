@@ -11,7 +11,8 @@ const sendEvent = async (
     'https://business-api.tiktok.com/open_api/v1.3/pixel/track/'
 
   const requestBody = {
-    pixel_code: payload.properties.pixelCode || settings.pixelCode,
+    event_source: 'web',
+    event_source_id: payload.properties.pixelCode || settings.pixelCode,
     ...payload,
     ...(settings.testKey && {
       test_event_code: settings.testKey,
