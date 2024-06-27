@@ -8,17 +8,19 @@ const sendEvent = async (
   settings: ComponentSettings
 ) => {
   const tiktokEndpoint =
-    'https://business-api.tiktok.com/open_api/v1.3/pixel/track/'
+    'https://business-api.tiktok.com/open_api/v1.3/event/track/'
 
   const requestBody = {
-    pixel_code: payload.properties.pixelCode || settings.pixelCode,
-    ...payload,
-    ...(settings.testKey && {
-      test_event_code: settings.testKey,
-    }),
+    event_source: payload.event_source || 'web',
+    event_source_id: payload.properties.pixelCode || settings.pixelCode,
+    test_event_code: settings.testKey,
+    data: {
+      ...payload,
+      ...(settings.testKey && {}),
+    },
   }
 
-  manager.fetch(tiktokEndpoint, {
+  const response = await manager.fetch(tiktokEndpoint, {
     method: 'POST',
     headers: {
       'Access-Token': payload.properties.accessToken || settings.accessToken,
@@ -26,10 +28,21 @@ const sendEvent = async (
     },
     body: JSON.stringify(requestBody),
   })
+
+  const responseData = await response?.json()
+
+  if (!response?.ok) {
+    console.error('Error sending Tiktok request:', responseData.message)
+  }
 }
 
 export default async function (manager: Manager, settings: ComponentSettings) {
   manager.addEventListener('event', async event => {
+    const request = await getRequestBody('event', event, settings)
+    sendEvent(request, manager, settings)
+  })
+
+  manager.addEventListener('custom-event', async event => {
     const request = await getRequestBody('event', event, settings)
     sendEvent(request, manager, settings)
   })

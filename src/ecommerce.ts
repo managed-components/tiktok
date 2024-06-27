@@ -19,16 +19,18 @@ const getContents = (payload: any) => {
 
   return products.map((p: any) => {
     return {
-      content_type: 'product',
       price: p.price || payload.price,
       quantity: p.quantity || 1,
       content_id: p.sku || p.product_id || payload.sku || payload.product_id,
+      content_category: p.category || payload.category,
+      content_name: p.name || payload.name,
+      brand: p.brand || payload.brand,
     }
   })
 }
 
 const getValue = (payload: any) =>
-  payload.value || payload.price || payload.total || payload.revenue
+  payload.revenue || payload.total || payload.value || payload.price
 
 const mapEcommerceData = (event: MCEvent) => {
   const { payload } = event
@@ -40,11 +42,13 @@ const mapEcommerceData = (event: MCEvent) => {
   properties.currency = data.currency
 
   properties.contents = getContents(data)
-
+  if (properties.contents?.content_id) {
+    properties.content_type = 'product'
+  }
   if (event.name === 'Products Searched') {
     properties.query = data.query
   }
-
+  properties.order_id = payload.order_id
   return properties
 }
 
