@@ -1,5 +1,6 @@
 module.exports = {
   root: true,
+  root: true,
   parser: '@typescript-eslint/parser',
   extends: [
     'eslint:recommended',
