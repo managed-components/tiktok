@@ -1,5 +1,6 @@
 import { ComponentSettings, MCEvent } from '@managed-components/types'
 
+// sourced from https://ads.tiktok.com/help/article/about-parameters?lang=en
 const USER_DATA: Record<string, { hashed?: boolean }> = {
   email: { hashed: true },
   phone: { hashed: true },
@@ -8,6 +9,19 @@ const USER_DATA: Record<string, { hashed?: boolean }> = {
   ttp: { hashed: false },
   ttclid: { hashed: false },
   locale: { hashed: false },
+  content_type: { hashed: false },
+  quantity: { hashed: false },
+  description: { hashed: false },
+  content_ids: { hashed: false },
+  currency: { hashed: false },
+  price: { hashed: false },
+  value: { hashed: false },
+  search_string: { hashed: false },
+  contents: { hashed: false },
+  delivery_category: { hashed: false },
+  content_name: { hashed: false },
+  content_category: { hashed: false },
+  status: { hashed: false },
 }
 
 const getTtclid = (event: MCEvent) => {
